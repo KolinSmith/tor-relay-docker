@@ -1,0 +1,21 @@
+# Environment file (may contain customizations)
+.env
+
+# Tor data (contains keys and fingerprints)
+tor-data/
+tor_data/
+
+# Tor logs
+tor-logs/
+tor_logs/
+
+# Docker volumes
+*.tar.gz
+
+# Backups
+*.backup
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db

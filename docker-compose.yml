@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  tor-relay:
+    build: .
+    image: tor-middle-relay:latest
+    container_name: tor-middle-relay
+    restart: unless-stopped
+
+    ports:
+      - "8443:8443"   # ORPort - Tor relay port
+      - "8444:8444"   # DirPort - Directory port
+
+    volumes:
+      - ./torrc:/etc/tor/torrc:ro
+      - tor_data:/var/lib/tor
+      - tor_logs:/var/log/tor
+
+    environment:
+      - TOR_NICKNAME=${TOR_NICKNAME:-operaTor}
+      - TOR_CONTACT=${TOR_CONTACT:-torrelay_operator.isothermally@8shield.net}
+      - TOR_OR_PORT=${TOR_OR_PORT:-8443}
+      - TOR_DIR_PORT=${TOR_DIR_PORT:-8444}
+      - TOR_BANDWIDTH_RATE=${TOR_BANDWIDTH_RATE:-1000}
+      - TOR_BANDWIDTH_BURST=${TOR_BANDWIDTH_BURST:-1500}
+
+    # Resource limits based on current operator usage (~620MB)
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+    networks:
+      - tor_network
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    read_only: false  # Tor needs to write to data directory
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  tor_data:
+    driver: local
+  tor_logs:
+    driver: local
+
+networks:
+  tor_network:
+    driver: bridge
