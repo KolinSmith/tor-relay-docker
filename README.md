@@ -34,15 +34,19 @@ A middle relay passes traffic between Tor clients and other relays, but never co
 
 ## Configuration
 
-### Current Settings
+### Default Settings
 
-- **Nickname**: operaTor
+These are example defaults that **you should customize** for your relay:
+
+- **Nickname**: `YourRelayNickname` (change in `torrc` or `.env`)
 - **Type**: Middle relay (no exit traffic)
-- **ORPort**: 8443
-- **DirPort**: 8444
-- **Bandwidth**: 1MB/s sustained, 1.5MB/s burst
-- **Memory**: ~600MB typical, 1GB limit
-- **Contact**: torrelay_operator.isothermally@8shield.net
+- **ORPort**: 8443 (customizable)
+- **DirPort**: 8444 (customizable)
+- **Bandwidth**: 1MB/s sustained, 1.5MB/s burst (customizable)
+- **Memory**: ~600MB typical, 1GB limit (adjust in `docker-compose.yml`)
+- **Contact**: `your-email@example.com` (change in `torrc` or `.env`)
+
+> **Note**: You should update the nickname and contact info before deploying. These settings can be customized in the `torrc` file or via environment variables in `.env`.
 
 ### Ports
 
@@ -168,8 +172,8 @@ docker-compose logs --tail=100 tor-relay
 ### Check Relay Status
 
 - **Tor Metrics**: https://metrics.torproject.org/rs.html
-- Search for: "operaTor"
-- Or by contact: torrelay_operator.isothermally@8shield.net
+- Search for your relay nickname
+- Or search by your contact email
 
 ### Resource Usage
 
@@ -269,7 +273,6 @@ The Tor Project's official packages support both architectures.
 - **Tor Project**: https://www.torproject.org/
 - **Tor Relay Guide**: https://community.torproject.org/relay/
 - **Tor Metrics**: https://metrics.torproject.org/
-- **Contact**: torrelay_operator.isothermally@8shield.net
 
 ## License
 

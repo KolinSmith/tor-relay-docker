@@ -17,14 +17,14 @@ services:
       - tor_logs:/var/log/tor
 
     environment:
-      - TOR_NICKNAME=${TOR_NICKNAME:-operaTor}
-      - TOR_CONTACT=${TOR_CONTACT:-torrelay_operator.isothermally@8shield.net}
+      - TOR_NICKNAME=${TOR_NICKNAME:-YourRelayNickname}
+      - TOR_CONTACT=${TOR_CONTACT:-your-email@example.com}
       - TOR_OR_PORT=${TOR_OR_PORT:-8443}
       - TOR_DIR_PORT=${TOR_DIR_PORT:-8444}
       - TOR_BANDWIDTH_RATE=${TOR_BANDWIDTH_RATE:-1000}
       - TOR_BANDWIDTH_BURST=${TOR_BANDWIDTH_BURST:-1500}
 
-    # Resource limits based on current operator usage (~620MB)
+    # Resource limits (adjust based on your needs)
     deploy:
       resources:
         limits:
