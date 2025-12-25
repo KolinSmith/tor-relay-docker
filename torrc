@@ -1,5 +1,5 @@
 # Tor Middle Relay Configuration
-# Containerized version of operator server configuration
+# Example configuration - customize before deploying!
 
 # Disable SOCKS proxy (relay only, no local connections)
 SOCKSPort 0
@@ -25,9 +25,9 @@ CookieAuthentication 1
 ORPort 8443
 DirPort 8444
 
-# Relay identity
-Nickname operaTor
-ContactInfo torrelay_operator.isothermally@8shield.net
+# Relay identity (REQUIRED: Change these before deploying!)
+Nickname YourRelayNickname
+ContactInfo your-email@example.com
 
 # Bandwidth limits
 # 1000 KB/s = ~1 MB/s sustained, 1500 KB/s = ~1.5 MB/s bursts
