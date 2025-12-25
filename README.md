@@ -70,7 +70,40 @@ These are example defaults that **you should customize** for your relay:
 
 ### Deployment
 
-**Option 1: Use pre-built image (recommended)**
+> **Why clone the repository?**
+> Even when using the pre-built image, you need the configuration files (`torrc`, `docker-compose.yml`, `.env.example`) from this repository. The Docker image only contains the Tor software - your relay's configuration is stored in these files.
+
+---
+
+#### **Option 1: Use Pre-Built Image** (Recommended - Faster & Easier)
+
+This pulls the ready-to-use image from GitHub Container Registry. No compilation needed.
+
+1. **Clone the repository** (to get config files):
+   ```bash
+   git clone https://github.com/KolinSmith/tor-relay-docker.git
+   cd tor-relay-docker
+   ```
+
+2. **Customize your relay** (required):
+   ```bash
+   cp .env.example .env
+   # Edit .env and set your nickname, contact email, etc.
+   # Or edit torrc directly
+   ```
+
+3. **Start the relay**:
+   ```bash
+   docker-compose up -d
+   ```
+
+   This uses `docker-compose.yml` which pulls: `ghcr.io/kolinsmith/tor-relay-docker:latest`
+
+---
+
+#### **Option 2: Build Locally** (For customization or development)
+
+This builds the Docker image from source on your machine using the `Dockerfile`.
 
 1. **Clone the repository**:
    ```bash
@@ -78,42 +111,42 @@ These are example defaults that **you should customize** for your relay:
    cd tor-relay-docker
    ```
 
-2. **Update docker-compose.yml to use GHCR image**:
-   ```yaml
-   services:
-     tor-relay:
-       image: ghcr.io/kolinsmith/tor-relay-docker:latest
-       # ... rest of config
-   ```
-
-3. **Start**:
+2. **Customize your relay** (required):
    ```bash
-   docker-compose up -d
+   cp .env.example .env
+   # Edit .env and set your nickname, contact email, etc.
    ```
 
-**Option 2: Build locally**
-
-1. **Clone and configure**:
+3. **Build and start**:
    ```bash
-   git clone https://github.com/KolinSmith/tor-relay-docker.git
-   cd tor-relay-docker
-   cp .env.example .env  # Optional customization
+   docker-compose -f docker-compose.build.yml up -d --build
    ```
 
-2. **Build and start**:
-   ```bash
-   docker-compose up -d --build
-   ```
+   This uses `docker-compose.build.yml` which builds from the `Dockerfile`.
 
-4. **View logs**:
-   ```bash
-   docker-compose logs -f tor-relay
-   ```
+---
 
-5. **Check status**:
-   ```bash
-   docker-compose ps
-   ```
+#### **Common Commands** (Both Options)
+
+**View logs**:
+```bash
+docker-compose logs -f tor-relay
+```
+
+**Check status**:
+```bash
+docker-compose ps
+```
+
+**Stop relay**:
+```bash
+docker-compose down
+```
+
+**Restart relay**:
+```bash
+docker-compose restart tor-relay
+```
 
 ## Migrating from Existing Relay
 
