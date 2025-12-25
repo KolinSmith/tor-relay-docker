@@ -46,11 +46,20 @@ A middle relay passes traffic between Tor clients and other relays, but never co
 
 ### Ports
 
-| Port | Protocol | Purpose |
-|------|----------|---------|
-| 8443 | TCP | ORPort (Tor relay connections) |
-| 8444 | TCP | DirPort (Tor directory service) |
-| 9051 | TCP | ControlPort (localhost only, not exposed) |
+These are the **default example ports**. You can use any available ports, but you must configure them consistently across all config files.
+
+| Port | Protocol | Purpose | Customizable |
+|------|----------|---------|--------------|
+| 8443 | TCP | ORPort (Tor relay connections) | Yes - change in `torrc`, `.env`, and `docker-compose.yml` ports section |
+| 8444 | TCP | DirPort (Tor directory service) | Yes - change in `torrc`, `.env`, and `docker-compose.yml` ports section |
+| 9051 | TCP | ControlPort (localhost only, not exposed) | Yes - change in `torrc` only (not exposed externally) |
+
+> **Note**: If you change ports, you must update them in **all three locations**:
+> 1. **`torrc`**: Set `ORPort` and `DirPort` values
+> 2. **`.env`**: Set `TOR_OR_PORT` and `TOR_DIR_PORT` (optional if using torrc)
+> 3. **`docker-compose.yml`**: Update the `ports:` section to match (e.g., `"9443:9443"` instead of `"8443:8443"`)
+>
+> The port numbers are **not special** - they're just examples. Choose any available ports that work for your network.
 
 ## Quick Start
 
