@@ -1,6 +1,17 @@
 # Tor Middle Relay - Docker
 
+[![Build and Publish](https://github.com/KolinSmith/tor-relay-docker/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/KolinSmith/tor-relay-docker/actions/workflows/docker-publish.yml)
+[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/KolinSmith/tor-relay-docker/pkgs/container/tor-relay-docker)
+
 A containerized Tor middle relay built from official Tor Project packages. This configuration mirrors the setup running on the "operator" server.
+
+## Docker Image
+
+Pull the pre-built image from GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/kolinsmith/tor-relay-docker:latest
+```
 
 ## What is a Tor Middle Relay?
 
@@ -14,7 +25,8 @@ A middle relay passes traffic between Tor clients and other relays, but never co
 
 - **Official Tor packages** from torproject.org APT repository
 - **Docker-based** for easy deployment and isolation
-- **Minimal image** based on Debian Bullseye Slim
+- **Minimal image** based on Debian Bookworm Slim
+- **Multi-architecture** support (amd64, arm64)
 - **Persistent data** for relay identity preservation
 - **Resource limits** to prevent memory issues
 - **Health checks** for monitoring
@@ -50,21 +62,39 @@ A middle relay passes traffic between Tor clients and other relays, but never co
 
 ### Deployment
 
+**Option 1: Use pre-built image (recommended)**
+
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/KolinSmith/tor-relay-docker.git
    cd tor-relay-docker
    ```
 
-2. **Optional: Configure environment**:
-   ```bash
-   cp .env.example .env
-   # Edit .env if you want to customize settings
+2. **Update docker-compose.yml to use GHCR image**:
+   ```yaml
+   services:
+     tor-relay:
+       image: ghcr.io/kolinsmith/tor-relay-docker:latest
+       # ... rest of config
    ```
 
-3. **Build and start**:
+3. **Start**:
    ```bash
    docker-compose up -d
+   ```
+
+**Option 2: Build locally**
+
+1. **Clone and configure**:
+   ```bash
+   git clone https://github.com/KolinSmith/tor-relay-docker.git
+   cd tor-relay-docker
+   cp .env.example .env  # Optional customization
+   ```
+
+2. **Build and start**:
+   ```bash
+   docker-compose up -d --build
    ```
 
 4. **View logs**:
@@ -105,13 +135,13 @@ docker-compose down
 docker run --rm \
   -v tor-relay-docker_tor_data:/data \
   -v $(pwd):/backup \
-  debian:bullseye-slim \
+  debian:bookworm-slim \
   sh -c "cd /data && tar xzf /backup/tor-data-backup.tar.gz"
 
 # Fix permissions
 docker run --rm \
   -v tor-relay-docker_tor_data:/data \
-  debian:bullseye-slim \
+  debian:bookworm-slim \
   sh -c "chown -R 108:113 /data"  # debian-tor UID:GID
 ```
 
