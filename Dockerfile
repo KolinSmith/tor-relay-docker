@@ -1,7 +1,7 @@
 # Tor Middle Relay Docker Image
-# Based on Debian Bullseye with official Tor packages
+# Based on Debian Bookworm with official Tor packages
 
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -11,9 +11,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Add Tor Project's official APT repository
-RUN echo "deb [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org bullseye main" \
+RUN echo "deb [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org bookworm main" \
     > /etc/apt/sources.list.d/tor.list \
-    && echo "deb-src [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org bullseye main" \
+    && echo "deb-src [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org bookworm main" \
     >> /etc/apt/sources.list.d/tor.list
 
 # Import Tor Project's GPG key
