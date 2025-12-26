@@ -1,5 +1,7 @@
-# Tor Middle Relay Configuration
+# Tor Relay Configuration
 # Example configuration - customize before deploying!
+# Default: Middle relay / Guard node (no exit traffic)
+# See README.md for exit relay configuration
 
 # Disable SOCKS proxy (relay only, no local connections)
 SOCKSPort 0
@@ -34,7 +36,8 @@ ContactInfo your-email@example.com
 RelayBandwidthRate 1000 KBytes
 RelayBandwidthBurst 1500 KBytes
 
-# Exit policy: MIDDLE RELAY ONLY - no exit traffic
+# Exit policy: Middle relay / Guard node (no exit traffic)
+# For exit relay configuration, see README.md "Exit Relay Configuration" section
 ExitPolicy reject *:*
 
 # Uncomment if running multiple relays (add fingerprints)
