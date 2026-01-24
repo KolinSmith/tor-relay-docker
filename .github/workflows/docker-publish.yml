@@ -68,6 +68,7 @@ jobs:
 
       # Build for all events, but only push to registry on master/main/tags
       - name: Build and push Docker image
+        id: build
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -80,7 +81,10 @@ jobs:
 
       - name: Image published
         if: github.event_name != 'pull_request'
-        run: echo "✅ Image published to ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+        run: |
+          echo "✅ Image published to ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          echo "Image digest: ${{ steps.build.outputs.digest }}"
+          echo "Git commit SHA: ${{ github.sha }}"
 
       - name: PR validation passed
         if: github.event_name == 'pull_request'
