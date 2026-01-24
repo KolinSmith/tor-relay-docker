@@ -21,6 +21,7 @@ RUN wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512
     | gpg --dearmor > /usr/share/keyrings/tor-archive-keyring.gpg
 
 # Install Tor and nyx monitoring tool
+# nyx provides interactive monitoring via: docker exec -it tor-relay nyx
 RUN apt-get update && apt-get install -y \
     tor \
     tor-geoipdb \
