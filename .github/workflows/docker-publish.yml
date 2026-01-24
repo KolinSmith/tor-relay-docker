@@ -5,12 +5,22 @@ on:
     branches:
       - master
       - main
+    paths:
+      - 'Dockerfile'
+      - 'docker-compose*.yml'
+      - 'torrc'
+      - '.github/workflows/docker-publish.yml'
     tags:
       - '**'
   pull_request:
     branches:
       - master
       - main
+    paths:
+      - 'Dockerfile'
+      - 'docker-compose*.yml'
+      - 'torrc'
+      - '.github/workflows/docker-publish.yml'
   workflow_dispatch:
 
 env:
