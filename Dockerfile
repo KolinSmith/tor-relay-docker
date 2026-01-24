@@ -20,10 +20,11 @@ RUN echo "deb [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://de
 RUN wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc \
     | gpg --dearmor > /usr/share/keyrings/tor-archive-keyring.gpg
 
-# Install Tor
+# Install Tor and nyx monitoring tool
 RUN apt-get update && apt-get install -y \
     tor \
     tor-geoipdb \
+    nyx \
     && rm -rf /var/lib/apt/lists/*
 
 # Create necessary directories with proper permissions
