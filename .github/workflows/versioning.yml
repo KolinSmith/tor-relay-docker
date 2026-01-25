@@ -4,6 +4,12 @@ on:
     branches:
       - master
       - releases/**
+    paths:
+      - 'Dockerfile'
+      - 'docker-compose*.yml'
+      - 'torrc'
+      - '.github/workflows/versioning.yml'
+      - 'version.rc'
 jobs:
   versioning:
     name: Release New Version (${{ github.ref_name }})
