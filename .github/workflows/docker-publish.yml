@@ -2,16 +2,8 @@ name: Build and Publish Docker Image
 
 on:
   push:
-    branches:
-      - master
-      - main
-    paths:
-      - 'Dockerfile'
-      - 'docker-compose*.yml'
-      - 'torrc'
-      - '.github/workflows/docker-publish.yml'
     tags:
-      - '**'
+      - 'v*.*.*'
   pull_request:
     branches:
       - master
