@@ -32,10 +32,12 @@ Passes traffic between other Tor relays, never connecting directly to destinatio
 - ✅ **Easy to run** - Works on most ISPs and hosting providers
 - ✅ **Still valuable** - Provides critical bandwidth to the Tor network
 
-### 🟢 Guard Node (Automatic Promotion)
-Entry point where Tor clients first connect to the network. After ~8 days of stable operation with good bandwidth and uptime, your middle relay may be **automatically promoted to Guard status** by the Tor directory authorities.
-- 🎯 **No configuration needed** - Promotion is automatic based on reliability
-- ⚡ **Requires stability** - High uptime and bandwidth needed
+### 🟢 Guard Node (Dynamic Flag)
+Entry point where Tor clients first connect to the network. The Guard flag is assigned (and re-evaluated) automatically by Tor directory authorities — there is no configuration required, but it is not permanent.
+- 🎯 **No configuration needed** - The flag is assigned based on reliability metrics
+- ⚡ **Requires ongoing stability** - High uptime and bandwidth (~250 KB/s+) needed to earn and keep the flag
+- 🔄 **Cycles automatically** - A relay can gain, lose, and regain the Guard flag as performance fluctuates; loss doesn't mean anything is broken
+- ⏱️ **~8 days to eligibility** - New relays typically become eligible after ~8 days of stable operation
 - 🔒 **Critical role** - Guards are the first hop in Tor circuits
 
 ### 🔴 Exit Relay (Advanced - Requires Special Configuration)
