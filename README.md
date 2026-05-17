@@ -1,7 +1,7 @@
 # Tor Relay - Docker
 
 [![Build and Publish](https://github.com/KolinSmith/tor-relay-docker/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/KolinSmith/tor-relay-docker/actions/workflows/docker-publish.yml)
-[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/KolinSmith/tor-relay-docker/pkgs/container/tor-relay-docker)
+[![GitHub Container Registry](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/KolinSmith/tor-relay-docker/pkgs/container/tor-relay-docker)
 [![Docker Hub](https://img.shields.io/badge/docker-hub-2496ED?logo=docker)](https://hub.docker.com/r/nilok3/tor-relay-docker)
 
 A containerized Tor relay built from official Tor Project packages. Supports middle relays, guard nodes, and exit relays.
