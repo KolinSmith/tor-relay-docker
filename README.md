@@ -5,6 +5,14 @@
 
 A containerized Tor relay built from official Tor Project packages. Supports middle relays, guard nodes, and exit relays.
 
+## Background
+
+I originally ran a Tor relay manually on a Raspberry Pi 1 Model B — the very first Pi ever released. Every time it crashed or something broke, I had to SSH in, manually reinstall Tor, reconfigure everything from scratch, and hope the relay identity survived. It was tedious and the relay was down far more than it should have been.
+
+With the help of Claude I was able to build this Docker container myself, packaging everything up so the relay stays running. Persistent identity across restarts, automatic health checks, and a simple `docker-compose up -d` to bring it back if anything ever does go wrong. Downtime and crashes are now rare rather than routine.
+
+If you're in the same boat — running Tor on a Pi or a small VPS and tired of babysitting it — hopefully this saves you the same headache.
+
 ## Docker Image
 
 Pull the pre-built image from GitHub Container Registry:
@@ -24,11 +32,21 @@ Passes traffic between other Tor relays, never connecting directly to destinatio
 - ✅ **Easy to run** - Works on most ISPs and hosting providers
 - ✅ **Still valuable** - Provides critical bandwidth to the Tor network
 
-### 🟢 Guard Node (Automatic Promotion)
-Entry point where Tor clients first connect to the network. After ~8 days of stable operation with good bandwidth and uptime, your middle relay may be **automatically promoted to Guard status** by the Tor directory authorities.
-- 🎯 **No configuration needed** - Promotion is automatic based on reliability
-- ⚡ **Requires stability** - High uptime and bandwidth needed
-- 🔒 **Critical role** - Guards are the first hop in Tor circuits
+### 🟢 Guard Node (Dynamic Flag)
+Entry point where Tor clients first connect to the network. The Guard flag is assigned automatically by Tor directory authorities based on bandwidth, uptime, and time known — there is no configuration required, but it is **not permanent** and will cycle.
+
+New relays go through four lifecycle phases before reaching steady-state:
+
+| Phase | Timeframe | What's Happening |
+|-------|-----------|-----------------|
+| Unmeasured | Days 0–3 | Minimal traffic (20KB consensus weight cap) while bandwidth authorities gather measurements |
+| Remote Measurement | Days 3–8 | Traffic ramps up; relay operates as middle only — no guard traffic yet |
+| Ramp-up Guard | Days 8–68 | Guard flag awarded; **traffic dips temporarily** as clients stop using you as a middle (they assume guard-flagged relays are already busy). Recovers over weeks as clients rotate guards every 4–8 weeks |
+| Steady-State | Day 68+ | Traffic stabilizes as client additions and dropoffs balance out |
+
+- 🔄 **Cycles** - A relay can lose and regain the Guard flag as performance fluctuates; this is normal
+- ⚡ **Requires ongoing stability** - Sufficient bandwidth, high uptime fraction, and time known threshold must all be met
+- ⚠️ **Traffic dip is normal** - If you see a drop after earning the Guard flag, don't panic — it's expected and recovers
 
 ### 🔴 Exit Relay (Advanced - Requires Special Configuration)
 Final relay in the circuit that connects to destination websites and services.
