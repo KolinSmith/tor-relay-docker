@@ -33,12 +33,20 @@ Passes traffic between other Tor relays, never connecting directly to destinatio
 - ✅ **Still valuable** - Provides critical bandwidth to the Tor network
 
 ### 🟢 Guard Node (Dynamic Flag)
-Entry point where Tor clients first connect to the network. The Guard flag is assigned (and re-evaluated) automatically by Tor directory authorities — there is no configuration required, but it is not permanent.
-- 🎯 **No configuration needed** - The flag is assigned based on reliability metrics
-- ⚡ **Requires ongoing stability** - High uptime and bandwidth (~250 KB/s+) needed to earn and keep the flag
-- 🔄 **Cycles automatically** - A relay can gain, lose, and regain the Guard flag as performance fluctuates; loss doesn't mean anything is broken
-- ⏱️ **~8 days to eligibility** - New relays typically become eligible after ~8 days of stable operation
-- 🔒 **Critical role** - Guards are the first hop in Tor circuits
+Entry point where Tor clients first connect to the network. The Guard flag is assigned automatically by Tor directory authorities based on bandwidth, uptime, and time known — there is no configuration required, but it is **not permanent** and will cycle.
+
+New relays go through four lifecycle phases before reaching steady-state:
+
+| Phase | Timeframe | What's Happening |
+|-------|-----------|-----------------|
+| Unmeasured | Days 0–3 | Minimal traffic (20KB consensus weight cap) while bandwidth authorities gather measurements |
+| Remote Measurement | Days 3–8 | Traffic ramps up; relay operates as middle only — no guard traffic yet |
+| Ramp-up Guard | Days 8–68 | Guard flag awarded; **traffic dips temporarily** as clients stop using you as a middle (they assume guard-flagged relays are already busy). Recovers over weeks as clients rotate guards every 4–8 weeks |
+| Steady-State | Day 68+ | Traffic stabilizes as client additions and dropoffs balance out |
+
+- 🔄 **Cycles** - A relay can lose and regain the Guard flag as performance fluctuates; this is normal
+- ⚡ **Requires ongoing stability** - Sufficient bandwidth, high uptime fraction, and time known threshold must all be met
+- ⚠️ **Traffic dip is normal** - If you see a drop after earning the Guard flag, don't panic — it's expected and recovers
 
 ### 🔴 Exit Relay (Advanced - Requires Special Configuration)
 Final relay in the circuit that connects to destination websites and services.
