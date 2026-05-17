@@ -33,6 +33,11 @@ RUN mkdir -p /var/lib/tor /var/log/tor /etc/tor \
     && chown -R debian-tor:debian-tor /var/lib/tor /var/log/tor \
     && chmod 700 /var/lib/tor
 
+# Entrypoint: substitutes TOR_NICKNAME, TOR_CONTACT, TOR_BANDWIDTH_* env vars
+# into a copy of torrc before starting Tor (torrc mount is read-only)
+COPY --chown=debian-tor:debian-tor entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Expose ports
 # ORPort: 8443 - Tor relay port
 # DirPort: 8444 - Directory port
@@ -46,5 +51,4 @@ USER debian-tor
 HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=3 \
     CMD pidof tor || exit 1
 
-# Run Tor
-CMD ["tor", "-f", "/etc/tor/torrc"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
