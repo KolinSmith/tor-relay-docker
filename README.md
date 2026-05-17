@@ -9,7 +9,7 @@ A containerized Tor relay built from official Tor Project packages. Supports mid
 
 I originally ran a Tor relay manually on a Raspberry Pi 1 Model B — the very first Pi ever released. Every time it crashed or something broke, I had to SSH in, manually reinstall Tor, reconfigure everything from scratch, and hope the relay identity survived. It was tedious and the relay was down far more than it should have been.
 
-With the help of Claude I was able to build this Docker container myself, packaging everything up so the relay just... stays running. Persistent identity across restarts, automatic health checks, and a simple `docker-compose up -d` to bring it back if anything ever does go wrong. Downtime and crashes are now rare rather than routine.
+With the help of Claude I was able to build this Docker container myself, packaging everything up so the relay stays running. Persistent identity across restarts, automatic health checks, and a simple `docker-compose up -d` to bring it back if anything ever does go wrong. Downtime and crashes are now rare rather than routine.
 
 If you're in the same boat — running Tor on a Pi or a small VPS and tired of babysitting it — hopefully this saves you the same headache.
 
