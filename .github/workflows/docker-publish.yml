@@ -16,12 +16,14 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: ghcr.io
+  GHCR_REGISTRY: ghcr.io
+  DOCKERHUB_REGISTRY: docker.io
   IMAGE_NAME: ${{ github.repository }}
+  DOCKERHUB_IMAGE: nilok3/tor-relay-docker
 
 jobs:
   # PRs: Build only (validate)
-  # Push to master/main or tags: Build + Publish to ghcr.io
+  # Push to master/main or tags: Build + Publish to ghcr.io and Docker Hub
   build-and-publish:
     name: ${{ github.event_name == 'pull_request' && 'Build (PR validation)' || 'Build and Publish' }}
     runs-on: ubuntu-latest
@@ -41,15 +43,25 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ${{ env.GHCR_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKERHUB_REGISTRY }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: |
+            ${{ env.GHCR_REGISTRY }}/${{ env.IMAGE_NAME }}
+            ${{ env.DOCKERHUB_IMAGE }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -58,7 +70,7 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=latest,enable={{is_default_branch}}
 
-      # Build for all events, but only push to registry on master/main/tags
+      # Build for all events, but only push to registries on master/main/tags
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v5
@@ -74,7 +86,8 @@ jobs:
       - name: Image published
         if: github.event_name != 'pull_request'
         run: |
-          echo "✅ Image published to ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          echo "✅ Image published to ${{ env.GHCR_REGISTRY }}/${{ env.IMAGE_NAME }}"
+          echo "✅ Image published to ${{ env.DOCKERHUB_IMAGE }}"
           echo "Image digest: ${{ steps.build.outputs.digest }}"
           echo "Git commit SHA: ${{ github.sha }}"
 
