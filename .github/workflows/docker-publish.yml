@@ -73,7 +73,7 @@ jobs:
       # Build for all events, but only push to registries on master/main/tags
       - name: Build and push Docker image
         id: build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
