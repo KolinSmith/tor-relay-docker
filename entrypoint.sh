@@ -22,4 +22,7 @@ if [ -n "${TOR_BANDWIDTH_BURST:-}" ]; then
     sed -i "s/^RelayBandwidthBurst .*/RelayBandwidthBurst ${TOR_BANDWIDTH_BURST} KBytes/" "$TORRC_TMP"
 fi
 
+# Clear stale nyx sqlite cache — avoids Cache._conn AttributeError on schema mismatch
+rm -rf /var/lib/tor/.cache/nyx/ 2>/dev/null || true
+
 exec tor -f "$TORRC_TMP"
