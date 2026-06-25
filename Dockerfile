@@ -26,7 +26,10 @@ RUN apt-get update && apt-get install -y \
     tor \
     tor-geoipdb \
     nyx \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && sed -i \
+       's/self\._conn\.close()/if hasattr(self, "_conn"): self._conn.close()/g' \
+       /usr/lib/python3/dist-packages/nyx/__init__.py
 
 # Create necessary directories with proper permissions
 RUN mkdir -p /var/lib/tor /var/log/tor /etc/tor \
