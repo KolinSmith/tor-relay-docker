@@ -32,8 +32,11 @@ RUN apt-get update && apt-get install -y \
        /usr/lib/python3/dist-packages/nyx/__init__.py
 
 # Create necessary directories with proper permissions
-RUN mkdir -p /var/lib/tor /var/log/tor /etc/tor \
-    && chown -R debian-tor:debian-tor /var/lib/tor /var/log/tor \
+# /.nyx/ must be pre-created owned by debian-tor so nyx can write its cache file.
+# Without this, Docker creates /.nyx/ as root:root when processing the nyxrc bind
+# mount, and the container user (108:113) cannot write to it.
+RUN mkdir -p /var/lib/tor /var/log/tor /etc/tor /.nyx \
+    && chown -R debian-tor:debian-tor /var/lib/tor /var/log/tor /.nyx \
     && chmod 700 /var/lib/tor
 
 # Entrypoint: substitutes TOR_NICKNAME, TOR_CONTACT, TOR_BANDWIDTH_* env vars
