@@ -32,12 +32,13 @@ RUN apt-get update && apt-get install -y \
        /usr/lib/python3/dist-packages/nyx/__init__.py
 
 # Create necessary directories with proper permissions
-# /.nyx/ must be pre-created owned by debian-tor so nyx can write its cache file.
-# Without this, Docker creates /.nyx/ as root:root when processing the nyxrc bind
-# mount, and the container user (108:113) cannot write to it.
+# /.nyx/ is world-writable so any runtime UID can write nyx's cache file.
+# The compose user (108:113) differs from the image's debian-tor (uid 101),
+# so chown alone is not sufficient — chmod 777 lets the actual runtime user write.
 RUN mkdir -p /var/lib/tor /var/log/tor /etc/tor /.nyx \
-    && chown -R debian-tor:debian-tor /var/lib/tor /var/log/tor /.nyx \
-    && chmod 700 /var/lib/tor
+    && chown -R debian-tor:debian-tor /var/lib/tor /var/log/tor \
+    && chmod 700 /var/lib/tor \
+    && chmod 777 /.nyx
 
 # Entrypoint: substitutes TOR_NICKNAME, TOR_CONTACT, TOR_BANDWIDTH_* env vars
 # into a copy of torrc before starting Tor (torrc mount is read-only)
