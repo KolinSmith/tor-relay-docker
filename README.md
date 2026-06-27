@@ -382,24 +382,16 @@ Your relay will resume with the same fingerprint and reputation!
 
 [Nyx](https://nyx.torproject.org/) is a terminal-based monitoring tool for Tor relays that provides real-time statistics, bandwidth graphs, and connection information.
 
-**Install Nyx** (on the Docker host):
-```bash
-# Debian/Ubuntu
-sudo apt install nyx
-
-# Or via pip
-pip install nyx
-```
+Nyx is bundled in the Docker image — no host installation needed.
 
 **Run Nyx to monitor your relay**:
 ```bash
-# Connect to the relay's control port
-docker exec -it tor-middle-relay sudo -u debian-tor nyx
+docker exec -it -e TERM=$TERM tor-middle-relay nyx
 ```
 
-**Create a convenient alias** (add to `~/.bashrc` or `~/.bash_aliases`):
+**Create a convenient alias** (add to `~/.bashrc` or `~/.zshrc`):
 ```bash
-alias status='docker exec -it tor-middle-relay sudo -u debian-tor nyx'
+alias status='docker exec -it -e TERM=$TERM tor-middle-relay nyx'
 ```
 
 Then simply run `status` to monitor your relay!
