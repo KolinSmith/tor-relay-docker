@@ -16,10 +16,16 @@ If you're in the same boat — running Tor on a Pi or a small VPS and tired of b
 
 ## Docker Image
 
-Pull the pre-built image from GitHub Container Registry:
+Pull the pre-built image from either registry:
 
+**GitHub Container Registry:**
 ```bash
 docker pull ghcr.io/kolinsmith/tor-relay-docker:latest
+```
+
+**Docker Hub:**
+```bash
+docker pull nilok3/tor-relay-docker:latest
 ```
 
 ## Understanding Tor Relay Types
