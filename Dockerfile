@@ -20,9 +20,17 @@ RUN echo "deb [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://de
 RUN wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc \
     | gpg --dearmor > /usr/share/keyrings/tor-archive-keyring.gpg
 
+# Cache-bust for the Tor install layer below. `tor` is intentionally unpinned so
+# each fresh build pulls the current release from the Tor Project apt repo. Bump
+# this value (or pass --build-arg TOR_APT_REFRESH=<anything-new>) to force the
+# layer to rebuild and pick up a new Tor release. CI passes a unique value on
+# every run, so scheduled/dispatch builds always re-resolve.
+ARG TOR_APT_REFRESH=2026-09-10
+
 # Install Tor and nyx monitoring tool
 # nyx provides interactive monitoring via: docker exec -it -e TERM=$TERM tor-middle-relay nyx
-RUN apt-get update && apt-get install -y \
+RUN echo "tor apt refresh: ${TOR_APT_REFRESH}" \
+    && apt-get update && apt-get install -y \
     tor \
     tor-geoipdb \
     nyx \
