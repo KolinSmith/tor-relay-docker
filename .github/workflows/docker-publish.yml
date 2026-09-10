@@ -14,6 +14,11 @@ on:
       - 'torrc'
       - '.github/workflows/docker-publish.yml'
   workflow_dispatch:
+  schedule:
+    # Every Monday 04:00 UTC — rebuild against the Tor Project apt repo so new
+    # Tor releases (security releases land on a ~2-week cadence) are published
+    # to :latest without a manual release. Does not cut a version tag.
+    - cron: '0 4 * * 1'
 
 env:
   GHCR_REGISTRY: ghcr.io
@@ -79,6 +84,10 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # Unique per run so the Tor install layer always re-resolves against
+          # the apt repo — the base image and earlier layers still come from cache.
+          build-args: |
+            TOR_APT_REFRESH=${{ github.run_id }}-${{ github.run_attempt }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64

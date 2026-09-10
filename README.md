@@ -28,6 +28,12 @@ docker pull ghcr.io/kolinsmith/tor-relay-docker:latest
 docker pull nilok3/tor-relay-docker:latest
 ```
 
+`:latest` is rebuilt automatically every Monday against the Tor Project apt
+repo, so it tracks current Tor releases (including the ~2-week security-release
+cadence) without a manual version bump. Versioned tags (`:1.1`, `:1.1.0`, …) are
+cut only on an explicit release. `tor` is installed unpinned; to force a local
+build to re-pull it, pass `--build-arg TOR_APT_REFRESH=$(date +%s)`.
+
 ## Understanding Tor Relay Types
 
 The Tor network uses different types of relays, each serving a distinct role:
@@ -447,12 +453,24 @@ docker exec tor-middle-relay sh -c "cat /proc/\$(pidof tor)/status | grep -E '(V
 
 ### Update Tor
 
+If you deploy the pre-built image (`docker-compose.yml`), just pull the latest —
+it's rebuilt weekly with the current Tor release:
+
 ```bash
-# Rebuild with latest packages
-docker-compose down
-docker-compose build --no-cache
+docker-compose pull
 docker-compose up -d
 ```
+
+If you build locally (`docker-compose.build.yml`), force the Tor layer to
+re-resolve against the apt repo:
+
+```bash
+docker-compose -f docker-compose.build.yml build --build-arg TOR_APT_REFRESH=$(date +%s)
+docker-compose -f docker-compose.build.yml up -d
+```
+
+The relay identity keys live in the `tor_data` volume, so an image swap keeps the
+same fingerprint and reputation.
 
 ### Restart Relay
 
