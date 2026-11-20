@@ -27,17 +27,26 @@ RUN wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512
 # every run, so scheduled/dispatch builds always re-resolve.
 ARG TOR_APT_REFRESH=2026-09-10
 
+# Exact apt version of `tor` to install, e.g. 0.4.9.17-1~d12.bookworm+1. CI
+# resolves the newest version from the Tor Project apt repo and passes it in so
+# the image can be tagged and labelled with it. Empty (local builds) installs
+# whatever the apt repo currently has.
+ARG TOR_VERSION=""
+
 # Install Tor and nyx monitoring tool
 # nyx provides interactive monitoring via: docker exec -it -e TERM=$TERM tor-middle-relay nyx
 RUN echo "tor apt refresh: ${TOR_APT_REFRESH}" \
     && apt-get update && apt-get install -y \
-    tor \
+    tor${TOR_VERSION:+=${TOR_VERSION}} \
     tor-geoipdb \
     nyx \
     && rm -rf /var/lib/apt/lists/* \
     && sed -i \
        's/self\._conn\.close()/if hasattr(self, "_conn"): self._conn.close()/g' \
        /usr/lib/python3/dist-packages/nyx/__init__.py
+
+# Record the Tor version this image was built with (empty for unpinned local builds)
+LABEL tor.version="${TOR_VERSION}"
 
 # Create necessary directories with proper permissions
 # /.nyx/ is world-writable so any runtime UID can write nyx's cache file.
