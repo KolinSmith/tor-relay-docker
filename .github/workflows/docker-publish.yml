@@ -60,6 +60,33 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Newest `tor` in the Tor Project apt repo. Pinning the build to it lets us
+      # tag and label the image with the Tor version it contains. Fails (rather
+      # than publishing an unversioned image) if the lookup returns nothing.
+      - name: Resolve Tor version from the apt repo
+        id: tor
+        run: |
+          set -euo pipefail
+          apt_version=$(curl -fsS --retry 3 \
+            https://deb.torproject.org/torproject.org/dists/bookworm/main/binary-amd64/Packages \
+            | awk '/^Package: tor$/{f=1} f&&/^Version:/&&!d{print $2; d=1}')
+          if [ -z "$apt_version" ]; then
+            echo "::error::Could not read the tor version from the Tor Project apt repo"
+            exit 1
+          fi
+          tor_version=${apt_version%%-*}
+          echo "apt_version=$apt_version" >> "$GITHUB_OUTPUT"
+          echo "tor_version=$tor_version" >> "$GITHUB_OUTPUT"
+          echo "apt repo has tor $apt_version"
+          # The apt repo can lag a new release by a day or so. Warn, do not fail.
+          upstream=$(curl -fsS --retry 3 https://dist.torproject.org/ \
+            | grep -oE 'tor-[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\.tar\.gz' \
+            | sed -E 's/^tor-//; s/\.tar\.gz$//' | sort -V | tail -1 || true)
+          if [ -n "$upstream" ] && [ "$upstream" != "$tor_version" ] \
+             && [ "$(printf '%s\n%s\n' "$upstream" "$tor_version" | sort -V | tail -1)" = "$upstream" ]; then
+            echo "::warning::Tor $upstream is released but the apt repo only has $tor_version"
+          fi
+
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v6
@@ -74,6 +101,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=tor-${{ steps.tor.outputs.tor_version }},enable={{is_default_branch}}
 
       # Build for all events, but only push to registries on master/main/tags
       - name: Build and push Docker image
@@ -88,6 +116,7 @@ jobs:
           # the apt repo — the base image and earlier layers still come from cache.
           build-args: |
             TOR_APT_REFRESH=${{ github.run_id }}-${{ github.run_attempt }}
+            TOR_VERSION=${{ steps.tor.outputs.apt_version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
